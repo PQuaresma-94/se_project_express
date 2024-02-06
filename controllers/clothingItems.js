@@ -1,13 +1,13 @@
 const Item = require("../models/clothingItems");
-const { BAD_REQUEST, NOT_FOUND, INTERNAL_SERVER_ERROR } = require("../utils/errors")
+const { BAD_REQUEST, NOT_FOUND, INTERNAL_SERVER_ERROR } = require("../utils/errors");
 
 // GET Items 
 const getItems = (req, res) => {
     Item.find({})
-        .then((items) => res.status(200).send(items))
+        .then((items) => res.send(items))
         .catch((err) => {
             console.error(err);
-            res.status(INTERNAL_SERVER_ERROR).send({ message: err.message });
+            res.status(INTERNAL_SERVER_ERROR).send({ message: "An error has occurred on the server." });
         });
 };
 
@@ -21,9 +21,9 @@ const createItem = (req, res) => {
         .catch((err) => {
             console.error(err);
             if (err.name === "ValidationError") {
-                return res.status(BAD_REQUEST).send({ message: err.message });
+                return res.status(BAD_REQUEST).send({ message: "Invalid data" });
             }
-            return res.status(INTERNAL_SERVER_ERROR).send({ message: err.message });
+            return res.status(INTERNAL_SERVER_ERROR).send({ message: "An error has occurred on the server." });
         });
 };
 
@@ -37,19 +37,18 @@ const deleteItem = (req, res) => {
             error.statusCode = NOT_FOUND;
             throw error;
         })
-        .then(() => res.status(200).send({ message: "Clothing item was deleted successfully"}))
+        .then(() => res.status(200).send({ message: "Clothing item was deleted successfully" }))
         .catch((err) => {
             console.error(err.name);
             if(err.name === "CastError") {
-                return res.status(BAD_REQUEST).send({message: err.message})
+                return res.status(BAD_REQUEST).send({ message: "Invalid data" });
             } 
-            return res.status(err.statusCode || INTERNAL_SERVER_ERROR).send({ message: err.message });
+            return res.status(err.statusCode || INTERNAL_SERVER_ERROR).send({ message: "An error has occurred on the server." });
         });
 };
 
 // Like Item
-
-const likeItem = (req,res) => {
+const likeItem = (req, res) => {
     const { itemId } = req.params;
 
     Item.findByIdAndUpdate(
@@ -66,14 +65,13 @@ const likeItem = (req,res) => {
     .catch((err) => {
         console.error(err.name);
         if(err.name === "CastError") {
-            return res.status(BAD_REQUEST).send({message: err.message})
+            return res.status(BAD_REQUEST).send({ message: "Invalid data" });
         } 
-        return res.status(err.statusCode || INTERNAL_SERVER_ERROR).send({ message: err.message });
+        return res.status(err.statusCode || INTERNAL_SERVER_ERROR).send({ message: "An error has occurred on the server." });
     });
-}
+};
 
 // Dislike Item
-
 const dislikeItem = (req, res) => {
     const { itemId } = req.params;
 
@@ -90,12 +88,11 @@ const dislikeItem = (req, res) => {
     .then(() => res.status(200).send({ message: "User has disliked this item" }))
     .catch((err) => {
         console.error(err.name);
-        console.log(err.name);
         if(err.name === "CastError") {
-            return res.status(BAD_REQUEST).send({message: err.message})
+            return res.status(BAD_REQUEST).send({ message: "Invalid data" });
         } 
-        return res.status(err.statusCode || INTERNAL_SERVER_ERROR).send({ message: err.message });
+        return res.status(err.statusCode || INTERNAL_SERVER_ERROR).send({ message: "An error has occurred on the server." });
     });
-  }
+};
 
 module.exports = { getItems, createItem, deleteItem, likeItem, dislikeItem };
