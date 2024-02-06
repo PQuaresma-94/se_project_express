@@ -5,6 +5,13 @@ const mainRouter = require("./routes/index");
 const app = express();
 const { PORT = 3001 } = process.env;
 
+app.use((req, res, next) => {
+    req.user = {
+      _id: '65bda671bf1b3668ce7cd483'
+    };
+    next();
+  });
+
 mongoose
     .connect('mongodb://127.0.0.1:27017/wtwr_db')
     .then(() => {
