@@ -28,7 +28,10 @@ const getUser = (req, res) => {
             if(err.name === "CastError") {
                 return res.status(BAD_REQUEST).send({message: "Invalid data"})
             } 
-            return res.status(err.statusCode || INTERNAL_SERVER_ERROR).send({ message: "An error has occurred on the server." });
+            if (err.statusCode) {
+                return res.status(err.statusCode).send({ message: err.message})
+            }
+            return res.status(INTERNAL_SERVER_ERROR).send({ message: "An error has occurred on the server." });
         });
 }
 
