@@ -1,5 +1,7 @@
 const User = require("../models/user");
-const { BAD_REQUEST, NOT_FOUND, INTERNAL_SERVER_ERROR } = require("../utils/errors")
+const bcrypt = require('bcrypt');
+const { BAD_REQUEST, NOT_FOUND, INTERNAL_SERVER_ERROR } = require("../utils/errors");
+const user = require("../models/user");
 
 // GET Users route
 
@@ -38,16 +40,21 @@ const getUser = (req, res) => {
 // POST User
 
 const createUser = (req, res) => {
-    const { name, avatar } = req.body
-    User.create({ name, avatar})
+    const { name, avatar, email, password } = req.body
+    bcrypt.hash(password, 10)
+    .then(hash => User.create({ name, avatar, email, password: hash })
         .then((user) => res.status(201).send(user))
         .catch((err) => {
             console.error(err)
             if(err.name === "ValidationError") {
                 return res.status(BAD_REQUEST).send({message: "Invalid data"})
             }
+            if (err.code === 11000) {
+                return res.status(BAD_REQUEST).send({ message: "Duplicate email. A user with this email already exists." })
+            };
             return res.status(INTERNAL_SERVER_ERROR).send({ message: "An error has occurred on the server." });
         })
+    )
 }
 
 module.exports = { getUsers, getUser, createUser }
