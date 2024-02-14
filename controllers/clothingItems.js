@@ -73,7 +73,7 @@ const likeItem = (req, res) => {
         if (err.statusCode) {
             return res.status(err.statusCode).send({ message: err.message})
         }
-        return res.status(err.statusCode || INTERNAL_SERVER_ERROR).send({ message: "An error has occurred on the server." });
+        return res.status(INTERNAL_SERVER_ERROR).send({ message: "An error has occurred on the server." });
     });
 };
 
@@ -100,7 +100,7 @@ const dislikeItem = (req, res) => {
         if (err.statusCode) {
             return res.status(err.statusCode).send({ message: err.message})
         }
-        return res.status(err.statusCode || INTERNAL_SERVER_ERROR).send({ message: "An error has occurred on the server." });
+        return res.status(INTERNAL_SERVER_ERROR).send({ message: "An error has occurred on the server." });
     });
 };
 
