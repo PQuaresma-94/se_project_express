@@ -13,15 +13,12 @@ router.post("/signup", createUser);
 
 router.use("/items", clothingItemRouter);
 
+// Auth Needed
+
+router.use("/users", auth, userRouter);
+
 router.use((req, res) => {
   res.status(NOT_FOUND).send({ message: "Requested resource not found" });
 });
-
-// Auth Needed
-
-router.use(auth)
-
-router.use("/users", userRouter);
-
 
 module.exports = router;

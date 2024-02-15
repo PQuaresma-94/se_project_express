@@ -99,18 +99,13 @@ const login = (req, res) => {
 // Get Current User
 
 const getCurrentUser = (req, res) => {
-    const { userId } = req.user._id;
+    const userId = req.user._id
     User.findById(userId)
-        .orFail(() => {
-            const error = new Error("User not found");
-            error.statusCode = NOT_FOUND;
-            throw error;
-        })
         .then((currentUser) => {
             if (!currentUser) {
-                return res.status(UNAUTHORIZED).send({ message: "User not found." });
+                return Promise.reject(new Error('User Not Found'));
             }
-            res.send(currentUser);
+            res.send({currentUser});
         })
         .catch((err) => {
             console.error(err.name);
@@ -120,7 +115,7 @@ const getCurrentUser = (req, res) => {
             if (err.statusCode) {
                 return res.status(err.statusCode).send({ message: err.message})
             }
-            return res.status(INTERNAL_SERVER_ERROR).send({ message: "An error has occurred on the server." });
+            return res.status(INTERNAL_SERVER_ERROR).send({ message: "Get Current User: An error has occurred on the server." });
         });
 };
 
