@@ -42,7 +42,9 @@ const deleteItem = (req, res) => {
             console.log(`"Item Id: " ${item.owner}`)
             console.log(`"UserID: " ${userId}`)
             if (!item.owner.equals(userId)) {
-                return res.statusCode(FORBIDDEN).send({ message: "You do not have permission to delete this card."})
+                const error = new Error( "You do not have permission to delete this card.");
+                error.statusCode = FORBIDDEN;
+                throw error;
             }
             return item.deleteOne()
             .then(() => {
@@ -55,6 +57,9 @@ const deleteItem = (req, res) => {
             } 
             if (err.statusCode) {
                 return res.status(err.statusCode).send({ message: err.message})
+            }
+            if (err.statusCode === FORBIDDEN) {
+                return res.status(FORBIDDEN).send({ message: err.message });
             }
             return res.status(INTERNAL_SERVER_ERROR).send({ message: "An error has occurred on the server." });
         });
