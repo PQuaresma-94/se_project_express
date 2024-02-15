@@ -39,8 +39,6 @@ const deleteItem = (req, res) => {
             throw error;
         })
         .then((item) => {
-            console.log(`"Item Id: " ${item.owner}`)
-            console.log(`"UserID: " ${userId}`)
             if (!item.owner.equals(userId)) {
                 const error = new Error( "You do not have permission to delete this card.");
                 error.statusCode = FORBIDDEN;
