@@ -46,29 +46,32 @@ const createUser = (req, res) => {
     User.findOne({ email })
     .then((existingUser) => {
         if (existingUser) {
-            return res.status(CONFLICT).send({message: "A user with this email already exists."})
+            const error = new Error();
+            error.statusCode = CONFLICT;
+            throw error;
         }
-        return bcrypt.hash(password, 10)
+        return bcrypt.hash(password, 10);
     })
-    
-    .then((hash) => User.create({ name, avatar, email, password: hash })
+    .then((hash) => {
+        User.create({ name, avatar, email, password: hash })
         .then((user) => {
             const userData = user.toObject();
             delete userData.password;
 
             res.status(201).send({userData})
+    
         })
+    })
         .catch((err) => {
             console.error(err)
             if(err.name === "ValidationError") {
                 return res.status(BAD_REQUEST).send({message: "Invalid data"})
             }
-            if (err.status === CONFLICT) {
+            if (err.statusCode === CONFLICT) {
                 return res.status(CONFLICT).send({ message: "Duplicate email. A user with this email already exists." })
             };
             return res.status(INTERNAL_SERVER_ERROR).send({ message: "An error has occurred on the server." });
         })
-    )
 }
 
 // Login User

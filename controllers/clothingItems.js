@@ -1,5 +1,5 @@
 const Item = require("../models/clothingItems");
-const { BAD_REQUEST, NOT_FOUND, INTERNAL_SERVER_ERROR } = require("../utils/errors");
+const { BAD_REQUEST, FORBIDDEN, NOT_FOUND, INTERNAL_SERVER_ERROR } = require("../utils/errors");
 
 // GET Items 
 const getItems = (req, res) => {
@@ -30,14 +30,24 @@ const createItem = (req, res) => {
 // DELETE Item
 const deleteItem = (req, res) => {
     const { itemId } = req.params;
+    const userId = req.user._id;
 
-    Item.findByIdAndDelete(itemId)
+    Item.findById(itemId)
         .orFail(() => {
             const error = new Error('Clothing item not found');
             error.statusCode = NOT_FOUND;
             throw error;
         })
-        .then(() => res.status(200).send({ message: "Clothing item was deleted successfully" }))
+        .then((item) => {
+            console.log(`"Item Id: " ${item.owner}`)
+            console.log(`"UserID: " ${userId}`)
+            if (!item.owner.equals(userId)) {
+                return res.statusCode(FORBIDDEN).send({ message: "You do not have permission to delete this card."})
+            }
+            return item.deleteOne()
+            .then(() => {
+                res.status(200).send({ message: "Clothing item was deleted successfully" })})
+            })  
         .catch((err) => {
             console.error(err.name);
             if(err.name === "CastError") {
