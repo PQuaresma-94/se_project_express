@@ -1,5 +1,5 @@
 const User = require("../models/user");
-const bcrypt = require("bcrypt");
+const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const { BAD_REQUEST, UNAUTHORIZED, NOT_FOUND, CONFLICT, INTERNAL_SERVER_ERROR } = require("../utils/errors");
 const { JWT_SECRET } = require("../utils/config")
@@ -82,7 +82,7 @@ const login = (req, res) => {
             .send({ message: "Invalid data" });
     }
 
-    return User.findUserByCredentials(email, password)
+    return User.findUserByCredentials( email, password )
     .then((user) => {
         console.log(user)
         const token = jwt.sign({ _id: user._id }, JWT_SECRET, { expiresIn: "7d" });
@@ -92,7 +92,7 @@ const login = (req, res) => {
         console.error(err)
         res
             .status(UNAUTHORIZED)
-            .send({ message: "Invalid email or password." });
+            .send({ message: "Authorization Error login" });
     });
 }
 
