@@ -115,15 +115,31 @@ const getCurrentUser = (req, res) => {
             if (err.statusCode) {
                 return res.status(err.statusCode).send({ message: err.message})
             }
-            return res.status(INTERNAL_SERVER_ERROR).send({ message: "Get Current User: An error has occurred on the server." });
+            return res.status(INTERNAL_SERVER_ERROR).send({ message: "An error has occurred on the server." });
         });
 };
 
 // Update Profile
 
-const updateProfile = (req, res) => {
+const updateUserProfile = (req, res) => {
+    const { name, avatar } = req.body;
 
+    User.findByIdAndUpdate(
+        req.user._id, 
+        { name, avatar },
+        {new: true, runValidators: true}
+    )
+    .then((updateUser) => {
+        res.send({updateUser})
+    })
+    .catch((err) => {
+        console.error(err)
+        if(err.name === "ValidationError") {
+            return res.status(BAD_REQUEST).send({message: "Invalid data"})
+        }
+        return res.status(INTERNAL_SERVER_ERROR).send({ message: "An error has occurred on the server." });
+    })
 }
 
 
-module.exports = { getCurrentUser, createUser, login }
+module.exports = { getCurrentUser, createUser, login, updateUserProfile }
