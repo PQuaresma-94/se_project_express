@@ -3,7 +3,7 @@ const { UNAUTHORIZED } = require("../utils/errors");
 const { JWT_SECRET } = require("../utils/config");
 
 const handleAuthError = (res) => {
-    console.error(err);
+    console.error(res);
     res
         .status(UNAUTHORIZED)
         .send({ message: "Authorization Error" })
