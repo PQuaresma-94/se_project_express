@@ -94,10 +94,10 @@ const updateUserProfile = (req, res) => {
     User.findByIdAndUpdate(
         req.user._id, 
         { name, avatar },
-        {new: true, runValidators: true}
+        { new: true, runValidators: true }
     )
     .then((updateUser) => {
-        res.send({updateUser})
+        res.send({ updateUser })
     })
     .catch((err) => {
         console.error(err)

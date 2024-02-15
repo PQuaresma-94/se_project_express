@@ -1,46 +1,51 @@
 # WTWR (What to Wear?): Back End
 
-The back-end project is focused on creating a server for the WTWR application. You’ll gain a deeper understanding of how to work with databases, set up security and testing, and deploy web applications on a remote machine. The eventual goal is to create a server with an API and user authorization.
+The WTWR Back End project aims to provide the server-side functionality for the WTWR application. Through this project, you will delve into database management, security implementation, and testing practices, while also learning how to deploy web applications on remote servers. The ultimate objective is to establish a server equipped with a robust API and user authentication capabilities.
 
-# Functionality
+## Functionality
 
-- Create a server to handle API requests from the WTWR application.
-- Set up database management for storing user profiles and clothing items recommendations.
-- Develop error handling functionality to manage and respond to common errors scenarios such as invalid input, bad request and server-side failures.
+- Set up a server to manage API requests from the WTWR application.
+- Implement database management to store user profiles and clothing item recommendations.
+- Develop error handling mechanisms to address and respond to common error scenarios, including invalid input, bad requests, and server-side failures.
+- Ensure required fields are provided, validate email formats, and enforce password complexity.
+- Handle duplicate email errors and other validation failures gracefully.
+- Create middleware to authenticate users before allowing access to protected routes.
+- Validate JWT tokens provided in the request headers to ensure users are authorized to access protected resources.
+- Handle unauthorized access gracefully, returning a 401 Unauthorized error to clients.
 
-# Project Features
+## Project Features
 
-- User Route:
-  - Create an user
-    ![Create User Request](screenshots/User_Add.png)
-  - Find all users
-    ![Find All Users Request](screenshots/User_FindAll.png)
-  - Find a user by ID
-    ![Find User by ID Request](screenshots/User_FindById.png)
-- Clothing Item Route:
-  - Create an item
-    ![Create Item Request](screenshots/Item_Add.png)
-  - Find all items
-    ![Find All Items Request](screenshots/Item_FindAll.png)
-  - Delete an item
-    ![Delete Item Request](screenshots/Item_DeleteById.png)
-  - Like an item
-    ![Like Item Request](screenshots/Item_Like.png)
-  - Dislike an item
-    ![Dislike Item Request](screenshots/Item_Dislike.png)
+### User Route:
 
-# Technologies and Techniques Used
+- **SignUp:**
+  ![SignUp](screenshots/User_SignUp.png)
+- **SignIn:**
+  ![SignIn](screenshots/User_SignIn.png)
+- **Get User Profile:**
+  ![Get User Profile](screenshots/User_GetData.png)
+- **Update User Profile:**
+  ![Update User Profile](screenshots/User_UpdateData.png)
 
-- Node.js: Utilized as the primary runtime environment for executing JavaScript code on the server.
-- Express.js: A web application framework for Node.js used to simplify the creation of robust APIs.
-- MongoDB: A NoSQL database management system employed for storing and managing user data.
+### Clothing Item Route:
+
+- **Create an Item:**
+  ![Create Item Request](screenshots/Item_Add.png)
+- **Find All Items:**
+  ![Find All Items Request](screenshots/Item_FindAll.png)
+- **Delete an Item:**
+  ![Delete Item Request](screenshots/Item_DeleteById.png)
+- **Like an Item:**
+  ![Like Item Request](screenshots/Item_Like.png)
+- **Dislike an Item:**
+  ![Dislike Item Request](screenshots/Item_Dislike.png)
+
+## Technologies and Techniques Used
+
+- **Node.js:** Primary runtime environment for executing JavaScript code on the server.
+- **Express.js:** Web application framework for Node.js used to simplify API development.
+- **MongoDB:** NoSQL database management system employed for storing and managing user data.
 
 ## Running the Project
 
-`npm run start` — to launch the server
-
-`npm run dev` — to launch the server with the hot reload feature
-
-### Testing
-
-Before committing your code, make sure you edit the file `sprint.txt` in the root folder. The file `sprint.txt` should contain the number of the sprint you're currently working on. For ex. 12
+- `npm run start` — Launches the server.
+- `npm run dev` — Launches the server with hot reload functionality.
