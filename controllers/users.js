@@ -76,6 +76,12 @@ const createUser = (req, res) => {
 const login = (req, res) => {
     const { email, password } = req.body;
 
+    if ( !email || !password ) {
+        return res
+            .status(BAD_REQUEST)
+            .send({ message: "Invalid data" });
+    }
+
     return User.findUserByCredentials(email, password)
     .then((user) => {
         console.log(user)
@@ -86,7 +92,7 @@ const login = (req, res) => {
         console.error(err)
         res
             .status(UNAUTHORIZED)
-            .send({ message: "Authorization Error" });
+            .send({ message: "Invalid email or password." });
     });
 }
 
@@ -95,15 +101,26 @@ const login = (req, res) => {
 const getCurrentUser = (req, res) => {
     const { userId } = req.user._id;
     User.findById(userId)
-        .then((user) => {
-            if (!user) {
+        .orFail(() => {
+            const error = new Error("User not found");
+            error.statusCode = NOT_FOUND;
+            throw error;
+        })
+        .then((currentUser) => {
+            if (!currentUser) {
                 return res.status(UNAUTHORIZED).send({ message: "User not found." });
             }
-            res.send(user);
+            res.send(currentUser);
         })
         .catch((err) => {
-            console.error(err);
-            res.status(INTERNAL_SERVER_ERROR).send({ message: "An error has occurred on the server." });
+            console.error(err.name);
+            if(err.name === "CastError") {
+                return res.status(BAD_REQUEST).send({message: "Invalid data"})
+            } 
+            if (err.statusCode) {
+                return res.status(err.statusCode).send({ message: err.message})
+            }
+            return res.status(INTERNAL_SERVER_ERROR).send({ message: "An error has occurred on the server." });
         });
 };
 
@@ -114,4 +131,4 @@ const updateProfile = (req, res) => {
 }
 
 
-module.exports = { getUsers, getCurrentUser, createUser, login }
+module.exports = { getCurrentUser, createUser, login }
