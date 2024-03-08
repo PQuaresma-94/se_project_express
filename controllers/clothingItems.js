@@ -77,7 +77,7 @@ const likeItem = (req, res) => {
         error.statusCode = NOT_FOUND;
         throw error;
     })
-    .then(() => res.status(200).send({ message: "User has liked this item" }))
+    .then((item) => res.status(200).send(item))
     .catch((err) => {
         console.error(err.name);
         if(err.name === "CastError") {
@@ -104,7 +104,7 @@ const dislikeItem = (req, res) => {
         error.statusCode = NOT_FOUND;
         throw error;
     })
-    .then(() => res.status(200).send({ message: "User has disliked this item" }))
+    .then((item) => res.status(200).send(item))
     .catch((err) => {
         console.error(err.name);
         if(err.name === "CastError") {
