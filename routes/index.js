@@ -2,7 +2,7 @@ const router = require("express").Router();
 const userRouter = require("./users");
 const clothingItemRouter = require("./clothingItems");
 const { auth } = require("../middlewares/auth");
-const { NotFoundError } = require("../utils/errors");
+const { NotFoundError } = require("../utils/errors/NotFoundError");
 const { createUser, login } = require("../controllers/users");
 
 // No Auth needed

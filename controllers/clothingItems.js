@@ -1,10 +1,7 @@
 const Item = require("../models/clothingItems");
-const {
-  InternalServerError,
-  BadRequestError,
-  ForbiddenError,
-  NotFoundError,
-} = require("../utils/errors");
+const { BadRequestError } = require("../utils/errors/BadRequestError");
+const { ForbiddenError } = require("../utils/errors/ForbiddenError");
+const { NotFoundError } = require("../utils/errors/NotFoundError");
 const { InternalServerError } = require("../utils/errors/InternalServerError");
 
 // GET Items

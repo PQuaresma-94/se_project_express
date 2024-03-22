@@ -1,14 +1,11 @@
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 const User = require("../models/user");
-const {
-  CONFLICT,
-  BadRequestError,
-  ConflictError,
-  InternalServerError,
-  UnauthorizedError,
-  NotFoundError,
-} = require("../utils/errors");
+const { BadRequestError } = require("../utils/errors/BadRequestError");
+const { UnauthorizedError } = require("../utils/errors/UnauthorizedError");
+const { NotFoundError } = require("../utils/errors/NotFoundError");
+const { ConflictError } = require("../utils/errors/ConflictError");
+const { InternalServerError } = require("../utils/errors/InternalServerError");
 const { JWT_SECRET } = require("../utils/config");
 
 // Create New User
@@ -19,11 +16,11 @@ const createUser = (req, res, next) => {
   User.findOne({ email })
     .then((existingUser) => {
       if (existingUser) {
-        const error = new Error(
-          "Duplicate email. A user with this email already exists.",
+        next(
+          new ConflictError(
+            "Duplicate email. A user with this email already exists.",
+          ),
         );
-        error.statusCode = CONFLICT;
-        throw error;
       }
       return bcrypt.hash(password, 10);
     })
@@ -39,9 +36,6 @@ const createUser = (req, res, next) => {
     .catch((err) => {
       if (err.name === "ValidationError") {
         next(new BadRequestError("Invalid data"));
-      }
-      if (err.statusCode === CONFLICT) {
-        next(new ConflictError(err.message));
       }
       next(new InternalServerError());
     });
@@ -105,7 +99,6 @@ const updateUserProfile = (req, res, next) => {
       res.send({ updateUser });
     })
     .catch((err) => {
-      console.error(err);
       if (err.name === "ValidationError") {
         next(new BadRequestError("Invalid data"));
       }
