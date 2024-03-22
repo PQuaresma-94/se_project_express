@@ -1,9 +1,5 @@
 const Item = require("../models/clothingItems");
 const {
-  BAD_REQUEST,
-  FORBIDDEN,
-  NOT_FOUND,
-  INTERNAL_SERVER_ERROR,
   InternalServerError,
   BadRequestError,
   ForbiddenError,
@@ -42,17 +38,13 @@ const deleteItem = (req, res, next) => {
 
   Item.findById(itemId)
     .orFail(() => {
-      const error = new Error("Clothing item not found");
-      error.statusCode = NOT_FOUND;
-      throw error;
+      next(new NotFoundError("Clothing item not found"));
     })
     .then((item) => {
       if (!item.owner.equals(userId)) {
-        const error = new Error(
-          "You do not have permission to delete this card.",
+        next(
+          new ForbiddenError("You do not have permission to delete this card."),
         );
-        error.statusCode = FORBIDDEN;
-        throw error;
       }
       return item.deleteOne().then(() => {
         res
@@ -64,12 +56,6 @@ const deleteItem = (req, res, next) => {
       console.error(err.name);
       if (err.name === "CastError") {
         next(new BadRequestError("Invalid Data"));
-      }
-      if (err.statusCode === FORBIDDEN) {
-        next(new ForbiddenError(err.message));
-      }
-      if (err.statusCode === NOT_FOUND) {
-        next(new NotFoundError(err.message));
       }
       next(new InternalServerError());
     });
@@ -85,18 +71,13 @@ const likeItem = (req, res, next) => {
     { new: true },
   )
     .orFail(() => {
-      const error = new Error("Clothing item not found");
-      error.statusCode = NOT_FOUND;
-      throw error;
+      next(new NotFoundError("Clothing item not found"));
     })
     .then((item) => res.status(200).send(item))
     .catch((err) => {
       console.error(err.name);
       if (err.name === "CastError") {
         next(new BadRequestError("Invalid Data"));
-      }
-      if (err.statusCode === NOT_FOUND) {
-        next(new NotFoundError(err.message));
       }
       next(new InternalServerError());
     });
@@ -112,18 +93,13 @@ const dislikeItem = (req, res, next) => {
     { new: true },
   )
     .orFail(() => {
-      const error = new Error("Clothing item not found");
-      error.statusCode = NOT_FOUND;
-      throw error;
+      next(new NotFoundError("Clothing item not found"));
     })
     .then((item) => res.status(200).send(item))
     .catch((err) => {
       console.error(err.name);
       if (err.name === "CastError") {
         next(new BadRequestError("Invalid Data"));
-      }
-      if (err.statusCode === NOT_FOUND) {
-        next(new NotFoundError(err.message));
       }
       next(new InternalServerError());
     });
