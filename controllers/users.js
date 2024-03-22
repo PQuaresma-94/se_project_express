@@ -64,7 +64,7 @@ const login = (req, res, next) => {
       });
       res.send({ token });
     })
-    .catch((err) => {
+    .catch(() => {
       next(new UnauthorizedError("Authorization Error login"));
     });
 };

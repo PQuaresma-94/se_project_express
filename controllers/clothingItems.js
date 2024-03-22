@@ -5,12 +5,13 @@ const {
   ForbiddenError,
   NotFoundError,
 } = require("../utils/errors");
+const { InternalServerError } = require("../utils/errors/InternalServerError");
 
 // GET Items
 const getItems = (req, res, next) => {
   Item.find({})
     .then((items) => res.send(items))
-    .catch((err) => {
+    .catch(() => {
       next(new InternalServerError());
     });
 };
