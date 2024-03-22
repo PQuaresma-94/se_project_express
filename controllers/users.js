@@ -2,16 +2,18 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 const User = require("../models/user");
 const {
-  BAD_REQUEST,
-  UNAUTHORIZED,
   CONFLICT,
-  INTERNAL_SERVER_ERROR,
+  BadRequestError,
+  ConflictError,
+  InternalServerError,
+  UnauthorizedError,
+  NotFoundError,
 } = require("../utils/errors");
 const { JWT_SECRET } = require("../utils/config");
 
 // Create New User
 
-const createUser = (req, res) => {
+const createUser = (req, res, next) => {
   const { name, avatar, email, password } = req.body;
 
   User.findOne({ email })
@@ -35,26 +37,23 @@ const createUser = (req, res) => {
       res.status(201).send({ userData });
     })
     .catch((err) => {
-      console.error(err);
       if (err.name === "ValidationError") {
-        return res.status(BAD_REQUEST).send({ message: "Invalid data" });
+        next(new BadRequestError("Invalid data"));
       }
       if (err.statusCode === CONFLICT) {
-        return res.status(CONFLICT).send({ message: err.message });
+        next(new ConflictError(err.message));
       }
-      return res
-        .status(INTERNAL_SERVER_ERROR)
-        .send({ message: "An error has occurred on the server." });
+      next(new InternalServerError());
     });
 };
 
 // Login User
 
-const login = (req, res) => {
+const login = (req, res, next) => {
   const { email, password } = req.body;
 
   if (!email || !password) {
-    return res.status(BAD_REQUEST).send({ message: "Invalid data" });
+    next(new BadRequestError("Invalid data"));
   }
 
   return User.findUserByCredentials(email, password)
@@ -66,14 +65,13 @@ const login = (req, res) => {
       res.send({ token });
     })
     .catch((err) => {
-      console.error(err);
-      res.status(UNAUTHORIZED).send({ message: "Authorization Error login" });
+      next(new UnauthorizedError("Authorization Error login"));
     });
 };
 
 // Get Current User
 
-const getCurrentUser = (req, res) => {
+const getCurrentUser = (req, res, next) => {
   const userId = req.user._id;
   User.findById(userId)
     .then((currentUser) => {
@@ -83,22 +81,19 @@ const getCurrentUser = (req, res) => {
       return res.send({ currentUser });
     })
     .catch((err) => {
-      console.error(err.name);
       if (err.name === "CastError") {
-        return res.status(BAD_REQUEST).send({ message: "Invalid data" });
+        next(new BadRequestError("Invalid data"));
       }
       if (err.statusCode) {
-        return res.status(err.statusCode).send({ message: err.message });
+        next(new NotFoundError(err.message));
       }
-      return res
-        .status(INTERNAL_SERVER_ERROR)
-        .send({ message: "An error has occurred on the server." });
+      next(new InternalServerError());
     });
 };
 
 // Update Profile
 
-const updateUserProfile = (req, res) => {
+const updateUserProfile = (req, res, next) => {
   const { name, avatar } = req.body;
 
   User.findByIdAndUpdate(
@@ -112,11 +107,9 @@ const updateUserProfile = (req, res) => {
     .catch((err) => {
       console.error(err);
       if (err.name === "ValidationError") {
-        return res.status(BAD_REQUEST).send({ message: "Invalid data" });
+        next(new BadRequestError("Invalid data"));
       }
-      return res
-        .status(INTERNAL_SERVER_ERROR)
-        .send({ message: "An error has occurred on the server." });
+      next(new InternalServerError());
     });
 };
 

@@ -4,22 +4,23 @@ const {
   FORBIDDEN,
   NOT_FOUND,
   INTERNAL_SERVER_ERROR,
+  InternalServerError,
+  BadRequestError,
+  ForbiddenError,
+  NotFoundError,
 } = require("../utils/errors");
 
 // GET Items
-const getItems = (req, res) => {
+const getItems = (req, res, next) => {
   Item.find({})
     .then((items) => res.send(items))
     .catch((err) => {
-      console.error(err);
-      res
-        .status(INTERNAL_SERVER_ERROR)
-        .send({ message: "An error has occurred on the server." });
+      next(new InternalServerError());
     });
 };
 
 // POST Item
-const createItem = (req, res) => {
+const createItem = (req, res, next) => {
   const { name, weather, imageUrl } = req.body;
   const userId = req.user._id;
 
@@ -28,16 +29,14 @@ const createItem = (req, res) => {
     .catch((err) => {
       console.error(err);
       if (err.name === "ValidationError") {
-        return res.status(BAD_REQUEST).send({ message: "Invalid data" });
+        next(new BadRequestError("Invalid data"));
       }
-      return res
-        .status(INTERNAL_SERVER_ERROR)
-        .send({ message: "An error has occurred on the server." });
+      next(new InternalServerError());
     });
 };
 
 // DELETE Item
-const deleteItem = (req, res) => {
+const deleteItem = (req, res, next) => {
   const { itemId } = req.params;
   const userId = req.user._id;
 
@@ -64,22 +63,20 @@ const deleteItem = (req, res) => {
     .catch((err) => {
       console.error(err.name);
       if (err.name === "CastError") {
-        return res.status(BAD_REQUEST).send({ message: "Invalid data" });
-      }
-      if (err.statusCode) {
-        return res.status(err.statusCode).send({ message: err.message });
+        next(new BadRequestError("Invalid Data"));
       }
       if (err.statusCode === FORBIDDEN) {
-        return res.status(FORBIDDEN).send({ message: err.message });
+        next(new ForbiddenError(err.message));
       }
-      return res
-        .status(INTERNAL_SERVER_ERROR)
-        .send({ message: "An error has occurred on the server." });
+      if (err.statusCode === NOT_FOUND) {
+        next(new NotFoundError(err.message));
+      }
+      next(new InternalServerError());
     });
 };
 
 // Like Item
-const likeItem = (req, res) => {
+const likeItem = (req, res, next) => {
   const { itemId } = req.params;
 
   Item.findByIdAndUpdate(
@@ -96,19 +93,17 @@ const likeItem = (req, res) => {
     .catch((err) => {
       console.error(err.name);
       if (err.name === "CastError") {
-        return res.status(BAD_REQUEST).send({ message: "Invalid data" });
+        next(new BadRequestError("Invalid Data"));
       }
-      if (err.statusCode) {
-        return res.status(err.statusCode).send({ message: err.message });
+      if (err.statusCode === NOT_FOUND) {
+        next(new NotFoundError(err.message));
       }
-      return res
-        .status(INTERNAL_SERVER_ERROR)
-        .send({ message: "An error has occurred on the server." });
+      next(new InternalServerError());
     });
 };
 
 // Dislike Item
-const dislikeItem = (req, res) => {
+const dislikeItem = (req, res, next) => {
   const { itemId } = req.params;
 
   Item.findByIdAndUpdate(
@@ -125,14 +120,12 @@ const dislikeItem = (req, res) => {
     .catch((err) => {
       console.error(err.name);
       if (err.name === "CastError") {
-        return res.status(BAD_REQUEST).send({ message: "Invalid data" });
+        next(new BadRequestError("Invalid Data"));
       }
-      if (err.statusCode) {
-        return res.status(err.statusCode).send({ message: err.message });
+      if (err.statusCode === NOT_FOUND) {
+        next(new NotFoundError(err.message));
       }
-      return res
-        .status(INTERNAL_SERVER_ERROR)
-        .send({ message: "An error has occurred on the server." });
+      next(new InternalServerError());
     });
 };
 
