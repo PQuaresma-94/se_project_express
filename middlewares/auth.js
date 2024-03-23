@@ -1,5 +1,4 @@
 const jwt = require("jsonwebtoken");
-const { UNAUTHORIZED } = require("../utils/errors");
 const { UnauthorizedError } = require("../utils/errors/UnauthorizedError");
 const { JWT_SECRET } = require("../utils/config");
 
@@ -22,7 +21,7 @@ const auth = (req, res, next) => {
   try {
     payload = jwt.verify(token, JWT_SECRET);
   } catch (err) {
-    return handleAuthError(res, next);
+    return handleAuthError(res);
   }
 
   req.user = payload;
