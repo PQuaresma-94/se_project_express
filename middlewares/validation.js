@@ -35,12 +35,12 @@ const validateUserInfoBody = celebrate({
       "string.uri": 'the "avatar" field must be a valid url',
     }),
 
-    email: Joi.string().required().email().message({
+    email: Joi.string().required().email().messages({
       "string.empty": 'The "email" field must be filled in',
       "string.email": 'the "email" field must be a valid email address',
     }),
 
-    password: Joi.string().required().message({
+    password: Joi.string().required().messages({
       "string.empty": 'The "password" field must be filled in',
     }),
   }),

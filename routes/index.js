@@ -2,14 +2,18 @@ const router = require("express").Router();
 const userRouter = require("./users");
 const clothingItemRouter = require("./clothingItems");
 const { auth } = require("../middlewares/auth");
+const {
+  validateUserInfoBody,
+  validateAuthentication,
+} = require("../middlewares/validation");
 const { NotFoundError } = require("../utils/errors/NotFoundError");
 const { createUser, login } = require("../controllers/users");
 
 // No Auth needed
 
-router.post("/signin", login);
+router.post("/signin", validateAuthentication, login);
 
-router.post("/signup", createUser);
+router.post("/signup", validateUserInfoBody, createUser);
 
 router.use("/items", clothingItemRouter);
 
