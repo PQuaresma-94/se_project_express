@@ -16,7 +16,7 @@ const createUser = (req, res, next) => {
   User.findOne({ email })
     .then((existingUser) => {
       if (existingUser) {
-        next(
+        return next(
           new ConflictError(
             "Duplicate email. A user with this email already exists.",
           ),

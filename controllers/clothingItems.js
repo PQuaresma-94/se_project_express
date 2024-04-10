@@ -40,7 +40,7 @@ const deleteItem = (req, res, next) => {
     })
     .then((item) => {
       if (!item.owner.equals(userId)) {
-        next(
+        return next(
           new ForbiddenError("You do not have permission to delete this card."),
         );
       }
